@@ -1,0 +1,6 @@
+Friday      Asked Anna to explain bit-blaster                           30 min
+Saturday    Tried messing around with bit-blaster                       3 hrs
+Monday      Started working on resolution algorithm & setup framework   3 hrs
+Tuesday     Continued working on resolution algorithm                   2 hrs
+Wednesday   Changed to recursive approach                               4 hrs
+Thursday    Trying to debug and git implementation                      2 hrs

@@ -171,7 +171,7 @@ int main(int argc, char* argv[]) {
     int numVars;
     vector<set<int>> clauses = readDimacs(filename, numVars);
 
-    if (iterativeResolution(clauses)) {
+    if (recursiveResolution(clauses)) {
         cout << "possible SAT" << endl;
     }
 
