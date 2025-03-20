@@ -1,0 +1,3 @@
+/home/roelnijhuis/Documents/Thesis/SATsolver/build/CMakeFiles/SATsolver.dir
+/home/roelnijhuis/Documents/Thesis/SATsolver/build/CMakeFiles/edit_cache.dir
+/home/roelnijhuis/Documents/Thesis/SATsolver/build/CMakeFiles/rebuild_cache.dir

@@ -1,0 +1,5 @@
+c shoudl have a possible solution "1 3 0"
+
+p cnf 3 2
+1 2 0
+-2 3 0
