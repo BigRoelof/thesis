@@ -1,6 +1,8 @@
 c should have a possible solution
 c when reduced should display "1 -2 3 0"
+c can't add "1 -2 3 0" to the file because then output changes
 p cnf 4 5
+c 1 -2 3 0
 1 -2 0
 -1 3 0
 2 -4 0

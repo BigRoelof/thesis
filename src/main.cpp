@@ -131,8 +131,37 @@ bool iterativeResolution(vector<set<int>>& clauses) {
 }
 
 bool recursiveResolution(vector<set<int>> clauses) {
+    set<int> unitLiterals;
     vector<set<int>> newClauses;
 
+    // check for clauses with 1 literal (must always be true)
+    for (const auto& clause : clauses) {
+        if (clause.size() == 1) {
+            unitLiterals.insert(*clause.begin()); 
+        }
+    }
+
+    // resolve unit clauses with all other clauses
+    if (!unitLiterals.empty()) {
+        for (int unit : unitLiterals) {
+            vector<set<int>> tempClauses;
+            for (auto& clause : clauses) {
+                if (clause.count(-unit)) {
+                    set<int> resolvedClause = resolve(clause, {unit}, -unit);
+                    if (resolvedClause.empty()) {
+                        cout << "UNSAT" << endl;
+                        return false;
+                    }
+                    tempClauses.push_back(resolvedClause);
+                } else if (!clause.count(unit)) {
+                    tempClauses.push_back(clause); 
+                }
+            }
+            clauses = tempClauses;
+        }
+    }
+
+    // regular resolution step
     for (size_t i = 0; i < clauses.size(); ++i) {
         for (size_t j = i + 1; j < clauses.size(); ++j) {
             for (int lit : clauses[i]) {
@@ -152,22 +181,17 @@ bool recursiveResolution(vector<set<int>> clauses) {
                     }
 
                     newClauses.push_back(newClause);
-
-                    // cout << "Resolving clauses { ";
-                    // for (int l : clauses[i]) cout << l << " ";
-                    // cout << "} and { ";
-                    // for (int l : clauses[j]) cout << l << " ";
-                    // cout << "} on literal " << lit << endl;
-
                     return recursiveResolution(newClauses);
                 }
             }
         }
     }
+
     clauses = filterEssentials(clauses);
     printClauses(clauses);
     return true;
 }
+
 
 int main(int argc, char* argv[]) {
     if (argc != 2) {
