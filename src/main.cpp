@@ -134,14 +134,14 @@ bool recursiveResolution(vector<set<int>> clauses) {
     set<int> unitLiterals;
     vector<set<int>> newClauses;
 
-    // check for clauses with 1 literal (must always be true)
+    // checks if there are singular literals that make up the entire clause (unit clauses)
     for (const auto& clause : clauses) {
         if (clause.size() == 1) {
             unitLiterals.insert(*clause.begin()); 
         }
     }
 
-    // resolve unit clauses with all other clauses
+    // resolve unit clauses with all other clauses that contain its complement
     if (!unitLiterals.empty()) {
         for (int unit : unitLiterals) {
             vector<set<int>> tempClauses;
