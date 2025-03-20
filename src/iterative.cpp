@@ -94,68 +94,41 @@ void printClauses(const vector<set<int>>& clauses) {
     }
 }
 
-bool recursiveResolution(vector<set<int>> clauses) {
-    set<int> unitLiterals;
-    vector<set<int>> newClauses;
-
-    // checks if there are clauses with 1 literal (unit clauses), since these must always hold
-    for (const auto& clause : clauses) {
-        if (clause.size() == 1) {
-            unitLiterals.insert(*clause.begin()); 
-        }
-    }
-
-    // resolve unit clauses with all other clauses that contain its complement
-    if (!unitLiterals.empty()) {
-        for (int unit : unitLiterals) {
-            vector<set<int>> tempClauses;
-            for (auto& clause : clauses) {
-                if (clause.count(-unit)) {
-                    set<int> resolvedClause = resolve(clause, {unit}, -unit);
-                    if (resolvedClause.empty()) {
-                        cout << "UNSAT" << endl;
-                        return false;
-                    }
-                    tempClauses.push_back(resolvedClause);
-                } else if (!clause.count(unit)) {
-                    tempClauses.push_back(clause); 
-                }
-            }
-            clauses = tempClauses;
-        }
-    }
-
-    // regular resolution step
-    for (size_t i = 0; i < clauses.size(); ++i) {
-        for (size_t j = i + 1; j < clauses.size(); ++j) {
-            for (int lit : clauses[i]) {
-                if (clauses[j].count(-lit)) {
-                    set<int> newClause = resolve(clauses[i], clauses[j], lit);
-                    
-                    if (newClause.empty()) {
-                        cout << "UNSAT" << endl;
-                        return false;
-                    }
-
-                    vector<set<int>> newClauses;
-                    for (size_t k = 0; k < clauses.size(); ++k) {
-                        if (k != i && k != j) {
-                            newClauses.push_back(clauses[k]);
+bool iterativeResolution(vector<set<int>>& clauses) {
+    set<set<int>> clauseSet(clauses.begin(), clauses.end());      
+    bool changed;
+    
+    do {
+        changed = false;
+        vector<set<int>> newClauses;
+        
+        for (size_t i = 0; i < clauses.size(); ++i) {
+            for (size_t j = i + 1; j < clauses.size(); ++j) {
+                for (int lit : clauses[i]) {
+                    if (clauses[j].count(-lit)) {
+                        set<int> newClause = resolve(clauses[i], clauses[j], lit);
+                        
+                        if (newClause.empty()) {
+                            cout << "UNSAT" << endl;
+                            return false;
                         }
-                    }
 
-                    newClauses.push_back(newClause);
-                    return recursiveResolution(newClauses);
+                        if (clauseSet.count(newClause) == 0) {
+                            newClauses.push_back(newClause);
+                            clauseSet.insert(newClause);
+                            changed = true;
+                        }
+
+                    }
                 }
             }
         }
-    }
+        // add all new clauses to the original list
+        clauses.insert(clauses.end(), newClauses.begin(), newClauses.end());
 
-    clauses = filterEssentials(clauses);
-    printClauses(clauses);
+    } while (changed);
     return true;
 }
-
 
 int main(int argc, char* argv[]) {
     if (argc != 2) {
@@ -167,7 +140,7 @@ int main(int argc, char* argv[]) {
     int numVars;
     vector<set<int>> clauses = readDimacs(filename, numVars);
 
-    if (recursiveResolution(clauses)) {
+    if (iterativeResolution(clauses)) {
         cout << "possible SAT" << endl;
     }
 
