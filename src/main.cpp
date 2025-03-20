@@ -32,7 +32,6 @@ vector<set<int>> readDimacs(const string& filename, int& numVars) {
     return clauses;
 }
 
-
 set<int> resolve(const set<int>& clause1, const set<int>& clause2, int target) {
     set<int> newClause;
     
@@ -55,6 +54,17 @@ vector<set<int>> filterEssentials(vector<set<int>> clauses) {
     for (size_t i = 0; i < clauses.size(); ++i) {
         bool isNecessary = true;
 
+        // filters if clause contains a literal and its complement
+        for (int lit : clauses[i]) {
+            if (clauses[i].count(-lit)) {
+                isNecessary = false;
+                break;
+            }
+        }
+
+        if (!isNecessary) continue;
+
+        // filters out a clause if a subset is present
         for (size_t j = 0; j < filteredClauses.size(); ++j) {
             if (includes(clauses[i].begin(), clauses[i].end(), 
                          filteredClauses[j].begin(), filteredClauses[j].end())) {
@@ -113,12 +123,10 @@ bool iterativeResolution(vector<set<int>>& clauses) {
                 }
             }
         }
-        // Add all new clauses to the original list
+        // add all new clauses to the original list
         clauses.insert(clauses.end(), newClauses.begin(), newClauses.end());
 
     } while (changed);
-    vector<set<int>> clauseVector(clauseSet.begin(), clauseSet.end());
-    printClauses(clauseVector);
     return true;
 }
 
